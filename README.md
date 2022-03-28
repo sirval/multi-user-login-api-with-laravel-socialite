@@ -1,4 +1,4 @@
-## About Multi-user-login-with-laravel-socialite
+## About Multi-user-login-api-with-laravel-socialite
 
 Multi-user-login-with-laravel-socialite is a login API built with laravel. It employs the native registration and login that is; username, email, password and confirm password. And also Laravel social application called Laravel Socialiate https://laravel.com/docs/8.x/socialite#main-content. This package enable developers implement login on click of a particular social media button like Facebook, Github, Google etc.
 
