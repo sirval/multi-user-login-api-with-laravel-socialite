@@ -24,6 +24,8 @@ Route::prefix('v1')->group(function()
     // Public Route
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/login/{provider}', [AuthController::class, 'gotoProvider']);
+    Route::get('/login/{provider}/callback', [AuthController::class, 'providerCallback']);
 
     //Protected Route
     Route::group(['middleware'=>['auth:sanctum']], function(){

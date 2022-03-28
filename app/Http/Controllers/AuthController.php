@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -75,4 +77,77 @@ class AuthController extends Controller
         return response($response, 201);
 
     }
+
+    /**
+     * Redirect the user to the Provider authentication page.
+     *
+     * @param $provider
+     * @return JsonResponse
+     */
+    public function gotoProvider($provider)
+    {
+        $validated = $this->validateProvider($provider);
+        if ($validated) {
+            return $validated;
+        }
+
+        return Socialite::driver($provider)->stateless()->redirect();
+    }
+
+    /**
+     * get user information from provider
+     *
+     * @param $provider
+     * @return JsonResponse
+     */
+
+     public function providerCallback($provider)
+     {
+         $validated = $this->validateProvider($provider);
+         if (!is_null($validated)) {
+             return $validated;
+         }
+         try {
+             $user = Socialite::driver($provider)->stateless()->user();
+         } catch (ClientException $exception) {
+             return response()->json(['error'=>"Invalid credentials provided"], 422);
+         }
+
+         $userCreated = User::firstOrCreate([
+             'email' => $user->getEmail()
+         ],
+         [
+             'email_verified_at' => now(),
+             'name'=>$user->getName(),
+             'status'=>true,
+         ]
+         );
+
+         $userCreated->providers()->updateOrCreate(
+             [
+                 'provider' => $provider,
+                 'provider_id' => $user->getId(),
+             ],
+             [ 
+                 'avatar' => $user->getAvatar
+             ]
+             );
+             $token = $userCreated->createToken('appToken')->plainTextToken;
+             return response()->json($userCreated, 200, ['Access-Token'=> $token]);
+     }
+
+     
+    /**
+     * validate provider
+     * @param $provider
+     * @return JsonResponse
+     */
+
+     public function validateProvider($provider)
+     {
+         if (!in_array($provider, ['facebook', 'github', 'twitter', 'google'])) {
+            return response()->json(['error' => 'Please login using facebook, github, twitter or google'], 422);
+         }
+     }
+
 }
