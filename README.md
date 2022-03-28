@@ -7,7 +7,7 @@ Multi-user-login-with-laravel-socialite is a login API built with laravel. It em
 To use this application
 - clone the project from my github repo at https://github.com/sirval/multi-user-login-api-with-laravel-socialite
 - once cloned, navigate to the folder in your terminal
-- run <composer update> to get all the required dependencies
+- run *composer update* to get all the required dependencies
 - create a .env file
 - goto .env.example, copy and paste its content into the .env file you created.
 - setup your social media client_id, client_secret_key and the redirect_uri all gotten from the         respective socail media developers platform.
